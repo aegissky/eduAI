@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AKC v4 교육 플랫폼 — 업데이트 이력</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0f172a; color: #e2e8f0; }
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:#0f172a; }
+    ::-webkit-scrollbar-thumb { background:#334155; border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:#475569; }
+
+    .split { display:flex; height:calc(100vh - 56px); overflow:hidden; }
+    .list-pane { width:420px; min-width:320px; border-right:1px solid #1e293b; overflow-y:auto; }
+    .detail-pane { flex:1; overflow-y:auto; padding:24px 32px; }
+
+    .ver-card { padding:14px 18px; border-bottom:1px solid #1e293b; cursor:pointer; transition:background 0.15s; }
+    .ver-card:hover { background:#1e293b; }
+    .ver-card.active { background:#172033; border-left:3px solid #06B6D4; }
+
+    .tag-badge { display:inline-block; font-size:0.65rem; font-weight:600; padding:2px 8px; border-radius:9999px; letter-spacing:0.03em; }
+
+    .detail-pane h2 { font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:4px; }
+    .detail-pane h3 { font-size:1rem; font-weight:600; color:#06B6D4; margin-top:20px; margin-bottom:8px; }
+    .detail-pane table { width:100%; border-collapse:collapse; font-size:0.8rem; margin:8px 0 16px; }
+    .detail-pane th { background:#1e293b; color:#94a3b8; padding:6px 10px; text-align:left; border:1px solid #334155; }
+    .detail-pane td { padding:6px 10px; border:1px solid #334155; color:#cbd5e1; }
+    .detail-pane tr:nth-child(even) td { background:rgba(15,23,42,0.5); }
+    .detail-pane pre { background:#0f172a; border:1px solid #334155; border-radius:6px; padding:12px; font-size:0.75rem; overflow-x:auto; color:#a5f3fc; margin:8px 0; white-space:pre-wrap; }
+    .detail-pane code { background:#1e293b; padding:1px 5px; border-radius:3px; font-size:0.78rem; color:#a5f3fc; }
+    .detail-pane ul { list-style:disc; padding-left:1.5rem; color:#cbd5e1; font-size:0.85rem; }
+    .detail-pane li { margin-bottom:4px; }
+    .detail-pane hr { border-color:#1e293b; margin:16px 0; }
+
+    .summary-chip { display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; color:#94a3b8; background:#1e293b; padding:3px 10px; border-radius:12px; margin:2px; }
+
+    .timeline-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+    .timeline-line { width:2px; background:#1e293b; flex-shrink:0; margin-left:4px; }
+
+    .filter-btn { font-size:0.72rem; padding:4px 12px; border-radius:9999px; border:1px solid #334155; background:transparent; color:#94a3b8; cursor:pointer; transition:all 0.15s; }
+    .filter-btn:hover { border-color:#475569; color:#e2e8f0; }
+    .filter-btn.active { background:#06B6D4; border-color:#06B6D4; color:#0f172a; font-weight:600; }
+
+    @media (max-width: 768px) {
+      .split { flex-direction:column; }
+      .list-pane { width:100%; height:45vh; min-width:unset; border-right:none; border-bottom:1px solid #1e293b; }
+      .detail-pane { padding:16px; }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col">
+
+  <!-- HEADER -->
+  <header class="px-4 md:px-6 py-3 border-b border-slate-800 flex items-center justify-between shrink-0"
+    style="background:linear-gradient(135deg,#0f172a 0%,#0c1a2e 100%);">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 hover:opacity-80 transition-opacity"
+        style="background:linear-gradient(135deg,#06B6D4,#0891B2); text-decoration:none; color:#fff;">A</a>
+      <div>
+        <h1 class="text-base md:text-lg font-bold text-white tracking-tight">
+          <span style="color:#06B6D4;">AKC</span> v4 교육 플랫폼
+          <span class="text-slate-400 font-normal text-sm ml-1">업데이트 이력</span>
+        </h1>
+        <p id="headerMeta" class="text-xs text-slate-500 mt-0.5 hidden md:block"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="index.html"
+        class="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md border transition-colors"
+        style="background:#1e293b;border-color:#334155;color:#cbd5e1;text-decoration:none;"
+        onmouseover="this.style.background='#334155'"
+        onmouseout="this.style.background='#1e293b'">
+        ← 교육 플랫폼
+      </a>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="split">
+
+    <!-- LEFT: 요약 목록 -->
+    <div class="list-pane" id="listPane">
+      <div class="sticky top-0 z-10 px-4 py-3 border-b border-slate-800" style="background:#0f172a;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-slate-300">버전 이력</span>
+          <span id="versionCount" class="text-xs text-slate-500"></span>
+        </div>
+        <div id="filterBar" class="flex flex-wrap gap-1.5"></div>
+      </div>
+      <div id="versionList"></div>
+    </div>
+
+    <!-- RIGHT: 원본 이력 -->
+    <div class="detail-pane" id="detailPane">
+      <div id="detailEmpty" class="flex items-center justify-center h-full text-slate-600 text-sm">
+        ← 좌측 목록에서 버전을 선택하세요
+      </div>
+      <div id="detailContent" class="hidden"></div>
+    </div>
+
+  </div>
+
+  <script src="changelog-data.js"></script>
+  <script>
+  (function() {
+    const data = window.CHANGELOG || [];
+    const tags = window.CHANGELOG_TAGS || {};
+    let activeFilter = 'all';
+    let activeIdx = -1;
+
+    // --- header meta ---
+    const latest = data[0];
+    const headerMeta = document.getElementById('headerMeta');
+    if (latest && headerMeta) {
+      headerMeta.textContent = `최신: v${latest.version} (${latest.date}) · 총 ${data.length}개 버전`;
+    }
+
+    // --- filter bar ---
+    const filterBar = document.getElementById('filterBar');
+    const allBtn = document.createElement('button');
+    allBtn.className = 'filter-btn active';
+    allBtn.textContent = '전체';
+    allBtn.dataset.tag = 'all';
+    filterBar.appendChild(allBtn);
+
+    const usedTags = [...new Set(data.map(d => d.tag))];
+    usedTags.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = (tags[t] || {}).label || t;
+      btn.dataset.tag = t;
+      btn.style.borderColor = (tags[t] || {}).color || '#334155';
+      filterBar.appendChild(btn);
+    });
+
+    filterBar.addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.tag;
+      renderList();
+    });
+
+    // --- render list ---
+    function renderList() {
+      const list = document.getElementById('versionList');
+      const filtered = activeFilter === 'all' ? data : data.filter(d => d.tag === activeFilter);
+      document.getElementById('versionCount').textContent = `${filtered.length}건`;
+
+      list.innerHTML = filtered.map((item, i) => {
+        const realIdx = data.indexOf(item);
+        const t = tags[item.tag] || { label: item.tag, color: '#64748b', bg: 'rgba(100,116,139,0.15)' };
+        return `
+        <div class="ver-card ${realIdx === activeIdx ? 'active' : ''}" data-idx="${realIdx}">
+          <div class="flex items-start gap-3">
+            <div class="flex flex-col items-center" style="min-width:10px;">
+              <div class="timeline-dot" style="background:${t.color};"></div>
+              ${i < filtered.length - 1 ? '<div class="timeline-line flex-1" style="min-height:40px;"></div>' : ''}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-sm font-bold text-white">v${item.version}</span>
+                <span class="tag-badge" style="color:${t.color};background:${t.bg};">${t.label}</span>
+              </div>
+              <div class="text-xs text-slate-500 mb-1.5">${item.date}</div>
+              <div class="text-sm text-slate-300 font-medium mb-2" style="line-height:1.4;">${item.title}</div>
+              <div class="flex flex-wrap">${item.summary.map(s =>
+                `<span class="summary-chip">${s}</span>`
+              ).join('')}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // --- click handler ---
+    document.getElementById('versionList').addEventListener('click', e => {
+      const card = e.target.closest('.ver-card');
+      if (!card) return;
+      const idx = parseInt(card.dataset.idx);
+      activeIdx = idx;
+      renderList();
+      renderDetail(idx);
+    });
+
+    // --- render detail ---
+    function renderDetail(idx) {
+      const item = data[idx];
+      if (!item) return;
+
+      document.getElementById('detailEmpty').classList.add('hidden');
+      const content = document.getElementById('detailContent');
+      content.classList.remove('hidden');
+
+      const t = tags[item.tag] || { label: item.tag, color: '#64748b', bg: 'rgba(100,116,139,0.15)' };
+
+      // parse markdown-like details
+      const html = parseDetails(item.details || '');
+
+      content.innerHTML = `
+        <div class="flex items-center gap-3 mb-1">
+          <span class="text-2xl font-bold text-white">v${item.version}</span>
+          <span class="tag-badge text-xs" style="color:${t.color};background:${t.bg};">${t.label}</span>
+        </div>
+        <div class="text-sm text-slate-500 mb-1">${item.date}</div>
+        <h2>${item.title}</h2>
+        <hr />
+        <div class="text-sm text-slate-400 mb-4">
+          <span class="font-semibold text-slate-300">요약:</span>
+          <ul class="mt-1">${item.summary.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <hr />
+        <div class="detail-body">${html}</div>
+      `;
+
+      // scroll to top
+      document.getElementById('detailPane').scrollTop = 0;
+    }
+
+    // --- simple markdown parser ---
+    function parseDetails(md) {
+      if (!md) return '<p class="text-slate-500 text-sm">상세 내용 없음</p>';
+      let html = md;
+
+      // code blocks
+      html = html.replace(/```([\s\S]*?)```/g, (_, code) => `<pre>${escHtml(code.trim())}</pre>`);
+
+      // inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // tables
+      html = html.replace(/^(\|.+\|)\n(\|[-| :]+\|)\n((?:\|.+\|\n?)+)/gm, (_, hdr, sep, body) => {
+        const ths = hdr.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+        const rows = body.trim().split('\n').map(row => {
+          const tds = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+          return `<tr>${tds}</tr>`;
+        }).join('');
+        return `<table><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+      });
+
+      // headers
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h3 style="font-size:1.1rem;color:#f1f5f9;margin-top:24px;">$1</h3>');
+
+      // bold
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e2e8f0;">$1</strong>');
+
+      // list items (- prefix)
+      html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+      // wrap consecutive <li>
+      html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+
+      // paragraphs (lines not already tagged)
+      html = html.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+        if (/^<[huptlo]/.test(trimmed)) return trimmed;
+        return `<p style="color:#94a3b8;font-size:0.85rem;margin:4px 0;">${trimmed}</p>`;
+      }).join('\n');
+
+      return html;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // --- init ---
+    renderList();
+
+    // auto-select latest
+    if (data.length > 0) {
+      activeIdx = 0;
+      renderList();
+      renderDetail(0);
+    }
+  })();
+  </script>
+</body>
+</html>

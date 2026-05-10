@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AKC v4 교육 플랫폼</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="h-full bg-slate-950 text-slate-200 flex flex-col" style="min-height:100vh;">
+
+  <!-- HEADER -->
+  <header class="px-4 md:px-6 py-3 border-b border-slate-800 flex items-center justify-between shrink-0"
+    style="background:linear-gradient(135deg,#0f172a 0%,#0c1a2e 100%);">
+    <div class="flex items-center gap-3">
+      <!-- 햄버거 버튼 (모바일 전용) -->
+      <button id="sidebarToggleBtn"
+        class="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 rounded-md transition-colors"
+        style="background:transparent;" aria-label="메뉴">
+        <span class="block w-5 h-0.5 bg-slate-400 rounded"></span>
+        <span class="block w-5 h-0.5 bg-slate-400 rounded"></span>
+        <span class="block w-5 h-0.5 bg-slate-400 rounded"></span>
+      </button>
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+        style="background:linear-gradient(135deg,#06B6D4,#0891B2);">A</div>
+      <div>
+        <h1 class="text-base md:text-lg font-bold text-white tracking-tight">
+          <span class="akc-tip" style="color:#06B6D4;">AKC
+            <span class="akc-tooltip">
+              <span style="display:block;font-size:0.7rem;color:#06B6D4;font-weight:700;letter-spacing:0.05em;">A·K·C</span>
+              <span style="display:block;font-size:0.8rem;color:#e2e8f0;font-weight:600;margin-top:2px;">Autonomous Knowledge Core</span>
+              <span style="display:block;font-size:0.7rem;color:#94a3b8;margin-top:2px;">자율 지식 코어 — AI 에이전트 운영체제</span>
+            </span>
+          </span>
+          <span class="text-white"> v4 교육 플랫폼</span>
+        </h1>
+        <p id="headerMeta" class="text-xs text-slate-500 mt-0.5 hidden md:block">Autonomous Knowledge Core · 66 Classes</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 md:gap-4">
+      <span id="syncIndicator" class="text-xs whitespace-nowrap hidden md:inline" style="color:#64748b">⚡ 로컬 전용</span>
+      <span id="progressText" class="text-xs md:text-sm text-slate-400 whitespace-nowrap hidden md:inline">0 / 32 완료</span>
+      <div id="headerProgressBar" class="hidden md:block" style="width:200px;height:6px;background:#1e293b;border-radius:3px">
+        <div id="progressBar" style="width:0%;height:100%;background:#06B6D4;border-radius:3px"></div>
+      </div>
+      <!-- 모바일 미니 진행률 -->
+      <div class="md:hidden flex items-center gap-1.5">
+        <div style="width:60px;height:4px;background:#1e293b;border-radius:2px;">
+          <div id="progressBarMobile" style="width:0%;height:100%;background:#06B6D4;border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+        <span id="progressTextMobile" class="text-xs text-slate-400">0%</span>
+      </div>
+      <button id="dashboardBtn" data-nav="dashboard"
+        class="px-2 md:px-3 py-1.5 text-xs md:text-sm font-medium rounded-md border transition-colors whitespace-nowrap"
+        style="background:#1e293b;border-color:#334155;color:#cbd5e1;"
+        onmouseover="this.style.background='#334155'"
+        onmouseout="this.style.background='#1e293b'">
+        대시보드
+      </button>
+      <button id="policyNavBtn" data-nav="policy"
+        class="px-2 md:px-3 py-1.5 text-xs md:text-sm font-medium rounded-md border transition-colors whitespace-nowrap"
+        style="background:#1e293b;border-color:#334155;color:#cbd5e1;"
+        onclick="showPolicyView()"
+        onmouseover="this.style.background='#334155'"
+        onmouseout="this.style.background='#1e293b'">
+        📋 헌법·정책
+      </button>
+      <a href="changelog.html"
+        class="px-2 md:px-3 py-1.5 text-xs md:text-sm font-medium rounded-md border transition-colors whitespace-nowrap"
+        style="background:#1e293b;border-color:#334155;color:#cbd5e1;text-decoration:none;"
+        onmouseover="this.style.background='#334155'"
+        onmouseout="this.style.background='#1e293b'">
+        📝 업데이트 이력
+      </a>
+    </div>
+  </header>
+
+  <!-- 모바일 사이드바 오버레이 -->
+  <div id="sidebarOverlay"></div>
+
+  <!-- BODY -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar"
+      class="border-r border-slate-800 overflow-y-auto bg-slate-950 shrink-0"
+      style="width:260px">
+      <!-- Rendered by JS -->
+    </aside>
+
+    <!-- MAIN -->
+    <main id="mainContent" class="flex-1 overflow-y-auto bg-slate-900 p-3 md:p-6">
+
+      <!-- DASHBOARD VIEW -->
+      <div id="dashboardView">
+        <div class="mb-4 flex items-end justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white">
+              <span class="akc-tip" style="color:#06B6D4;">AKC
+                <span class="akc-tooltip">
+                  <span style="display:block;font-size:0.7rem;color:#06B6D4;font-weight:700;letter-spacing:0.05em;">A·K·C</span>
+                  <span style="display:block;font-size:0.8rem;color:#e2e8f0;font-weight:600;margin-top:2px;">Autonomous Knowledge Core</span>
+                  <span style="display:block;font-size:0.7rem;color:#94a3b8;margin-top:2px;">자율 지식 코어 — AI 에이전트 운영체제</span>
+                </span>
+              </span>
+              <span class="text-white"> v4 학습 대시보드</span>
+            </h2>
+            <p id="dashboardMeta" class="text-slate-400 mt-1 text-sm">10개 모듈 · 32개 클래스 · 약 7시간 15분</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="exportProgressCSV()"
+              class="text-xs text-slate-500 hover:text-cyan-400 border border-slate-800 hover:border-cyan-800 px-2 py-1 rounded transition-colors">
+              ↓ CSV 내보내기
+            </button>
+            <button onclick="resetProgress()"
+              class="text-xs text-slate-600 hover:text-slate-400 border border-slate-800 hover:border-slate-700 px-2 py-1 rounded transition-colors">
+              진행률 초기화
+            </button>
+          </div>
+        </div>
+
+        <!-- Continue widget -->
+        <div id="continueBtn"></div>
+
+        <!-- Stats summary cards -->
+        <div id="statsCards" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"></div>
+
+        <!-- Quiz score chart -->
+        <div id="quizChart" class="mb-4"></div>
+
+        <!-- Mastery matrix -->
+        <div id="masteryMatrix"></div>
+
+        <!-- Module cards -->
+        <div id="moduleCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- POLICY VIEW -->
+      <div id="policyView" class="hidden" style="height:100%;display:none;">
+        <div class="policy-split">
+
+          <!-- ▌LEFT: 용어·관계 사전 -->
+          <div class="policy-panel">
+            <div class="policy-panel-header">
+              <h3 class="policy-panel-title">📖 용어·관계 사전</h3>
+              <input id="glossarySearch" type="text" placeholder="용어 / 관계 검색..." class="policy-search" autocomplete="off" />
+              <div class="policy-type-tabs">
+                <button class="gloss-type-tab active" data-type="all">전체</button>
+                <button class="gloss-type-tab" data-type="term">용어</button>
+                <button class="gloss-type-tab" data-type="relation">관계</button>
+              </div>
+            </div>
+            <div class="policy-viewport">
+              <div id="glossaryList" class="policy-list-scroll"></div>
+              <div id="glossaryDetail" class="policy-detail-scroll hidden" style="padding:14px;"></div>
+            </div>
+          </div>
+
+          <!-- ▌RIGHT: 헌법·정책 문서 -->
+          <div class="policy-panel">
+            <div class="policy-panel-header">
+              <h3 class="policy-panel-title">📋 헌법·정책 문서</h3>
+              <div class="policy-zone-tabs">
+                <button class="policy-zone-tab active" data-zone="all">전체</button>
+                <button class="policy-zone-tab" data-zone="system">시스템</button>
+                <button class="policy-zone-tab" data-zone="agent">Agent</button>
+                <button class="policy-zone-tab" data-zone="cognitive">Cognitive</button>
+                <button class="policy-zone-tab" data-zone="learning">Learning</button>
+                <button class="policy-zone-tab" data-zone="docs">참고</button>
+              </div>
+            </div>
+            <div class="policy-viewport">
+              <div id="policyList" class="policy-list-scroll"></div>
+              <div id="policyContent" class="policy-detail-scroll hidden"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- LESSON VIEW -->
+      <div id="lessonView" class="hidden max-w-3xl mx-auto w-full">
+        <div id="lessonHeader"></div>
+        <div id="lessonContent" class="lesson-content mt-6 space-y-6"></div>
+        <div id="keyTerms" class="mt-6"></div>
+        <div id="quizSection" class="mt-8"></div>
+        <div id="lessonNav" class="mt-8 flex justify-between items-center"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ── VOCAB PANEL ──────────────────────────────────────────── -->
+  <div id="vocabPanel">
+    <div id="vocabTab" title="영한 용어집 (클릭으로 고정)">
+      <span>용어집</span>
+      <div class="pin-dot"></div>
+    </div>
+    <div id="vocabBody">
+      <div id="vocabHeader">
+        <h3 id="vocabHeaderTitle">📖 영한 용어집</h3>
+        <input id="vocabSearch" type="text" placeholder="단어 검색..." autocomplete="off" />
+      </div>
+      <div id="vocabViewport">
+        <div id="vocabListView">
+          <div id="vocabList"></div>
+        </div>
+        <div id="vocabDetailView">
+          <div id="vocabDetailContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SQLITE (sql.js WASM) -->
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist/sql-wasm.js"></script>
+  <script src="storage-client.js"></script>
+
+  <!-- DATA + APP -->
+  <script src="edu-data.js"></script>
+  <script src="edu-data-p2.js"></script>
+  <script src="edu-data-p3.js"></script>
+  <script src="edu-data-p4.js"></script>
+  <script src="edu-data-p5.js"></script>
+  <script src="edu-data-p6.js"></script>
+  <script src="vocab-data.js"></script>
+  <script src="edu-app.js"></script>
+
+  <!-- UI 유틸리티 (툴팁 트래커 + 모바일 사이드바) -->
+  <script src="ui-utils.js"></script>
+
+  <!-- 용어집 패널 로직 -->
+  <script src="vocab-panel.js"></script>
+
+  <!-- 헌법·정책 데이터 + 패널 로직 -->
+  <script src="policy-data.js"></script>
+  <script src="policy-panel.js"></script>
+
+</body>
+</html>
