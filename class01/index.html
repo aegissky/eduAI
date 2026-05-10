@@ -235,7 +235,7 @@
   <script>
     window.addEventListener('error', function(e) {
       var src = (e.target && e.target.src) || '';
-      if (src.includes('cdn.jsdelivr.net') || src.includes('cdn.tailwindcss.com')) {
+      if (src.includes('assets/')) {
         document.getElementById('cdnErrorBanner').style.display = 'block';
       }
     }, true);
