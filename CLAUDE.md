@@ -71,6 +71,13 @@ eduAI/
     └── backup_data.json  ← 원본 백업
 ```
 
+## sync-task 규칙
+
+- `sync-task.js`는 `D:\projects\products\eduAI\class01\sync_state.json` (원본)을 우선 읽음
+- 태스크 상태 변경 시 **원본 + 로컬 양쪽** 동시 저장
+- 원본과 불일치 시: `node sync-task.js --sync` 로 원본 → 로컬 재동기화
+- `sync_state.json`은 `.gitignore` 제외 대상 (로컬 전용)
+
 ## 커밋 규칙
 
 - `assets/` 파일은 반드시 커밋에 포함 (오프라인 동작 보장)
