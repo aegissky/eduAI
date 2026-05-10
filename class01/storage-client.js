@@ -161,8 +161,56 @@ function updateSyncIndicator(status) {
   el.style.color  = s.color;
 }
 
-// ── 페이지 로드 시 DB 사전 초기화 ─────────────────────────────────────────────
+// ── 최초 1회 backup_data.json 자동 시드 ───────────────────────────────────────
+// localStorage에 'akc-edu-seeded' 플래그가 없을 때만 실행
+async function _seedFromBackup() {
+  const SEED_KEY = 'akc-edu-seeded-v1';
+  if (localStorage.getItem(SEED_KEY)) return;   // 이미 시드 완료
+
+  let backup;
+  try {
+    const res = await fetch('./backup_data.json');
+    if (!res.ok) return;
+    backup = await res.json();
+  } catch (e) {
+    return;   // 파일 없으면 조용히 종료
+  }
+
+  if (!Array.isArray(backup?.edu_quiz_state)) return;
+
+  const db = await _initDB();
+
+  // edu_progress 시드
+  if (Array.isArray(backup.edu_progress)) {
+    const stmt = db.prepare(`
+      INSERT INTO edu_progress (user_id, class_id, status, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(user_id, class_id) DO NOTHING
+    `);
+    backup.edu_progress.forEach(r => stmt.run([r.user_id, r.class_id, r.status, r.updated_at || '']));
+    stmt.free();
+  }
+
+  // edu_quiz_state 시드
+  const stmt = db.prepare(`
+    INSERT INTO edu_quiz_state (user_id, class_id, answered, score, updated_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(user_id, class_id) DO NOTHING
+  `);
+  backup.edu_quiz_state.forEach(r => {
+    const answered = typeof r.answered === 'string' ? r.answered : JSON.stringify(r.answered || {});
+    stmt.run([r.user_id, r.class_id, answered, r.score || 0, r.updated_at || '']);
+  });
+  stmt.free();
+
+  _persistDB();
+  localStorage.setItem(SEED_KEY, '1');
+  console.log('[sqlite] backup_data.json 시드 완료');
+}
+
+// ── 페이지 로드 시 DB 초기화 + 자동 시드 ─────────────────────────────────────
 _initDB()
+  .then(() => _seedFromBackup())
   .then(() => console.log('[sqlite] DB ready'))
   .catch(e  => console.warn('[sqlite] init failed:', e.message));
 

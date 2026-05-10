@@ -384,6 +384,56 @@ function exportProgressCSV() {
   URL.revokeObjectURL(url);
 }
 
+// ── JSON 백업 내보내기 ────────────────────────────────────────────────────────
+function exportProgressJSON() {
+  const uid = window.supaEdu?.getUserId() || localStorage.getItem('akc-edu-uid') || 'unknown';
+  const data = {
+    exported_at: new Date().toISOString(),
+    user_id: uid,
+    progress:  state.progress,
+    quizState: state.quizState
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `akc-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 백업 파일이 저장됐습니다.');
+}
+window.exportProgressJSON = exportProgressJSON;
+
+// ── JSON 백업 불러오기 ────────────────────────────────────────────────────────
+function importProgressJSON() {
+  const input = document.createElement('input');
+  input.type  = 'file';
+  input.accept = '.json';
+  input.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!data.progress || !data.quizState) {
+        showToast('❌ 올바른 백업 파일이 아닙니다.');
+        return;
+      }
+      if (!confirm(`백업 날짜: ${data.exported_at?.slice(0,10) || '알 수 없음'}\n현재 데이터를 덮어쓰시겠습니까?`)) return;
+      state.progress  = data.progress;
+      state.quizState = data.quizState;
+      saveProgress();
+      renderSidebar();
+      showDashboard();
+      showToast('✅ 백업 데이터가 복원됐습니다.');
+    } catch (err) {
+      showToast('❌ 파일 읽기 실패: ' + err.message);
+    }
+  };
+  input.click();
+}
+window.importProgressJSON = importProgressJSON;
+
 // ── Dashboard ────────────────────────────────────────────────────────────────
 function showDashboard() {
   state.view = 'dashboard';
