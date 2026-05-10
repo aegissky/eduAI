@@ -37,7 +37,7 @@ async function _initDB() {
   if (_db) return _db;
 
   _SQL = await initSqlJs({
-    locateFile: f => `https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist/${f}`
+    locateFile: f => `assets/${f}`
   });
 
   const saved = _loadPersistedDB();

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AKC v4 교육 플랫폼</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="h-full bg-slate-950 text-slate-200 flex flex-col" style="min-height:100vh;">
@@ -220,8 +220,28 @@
     </div>
   </div>
 
+  <!-- CDN 오류 감지 배너 -->
+  <div id="cdnErrorBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
+    background:#7f1d1d;color:#fecaca;padding:12px 20px;font-size:13px;text-align:center;
+    border-bottom:2px solid #ef4444;">
+    ⚠️ 일부 리소스를 불러오지 못했습니다 — assets/ 폴더가 누락되었거나 파일이 손상되었습니다.
+    GitHub에서 최신 버전을 다시 받거나, 인터넷에 연결한 후 새로고침 해주세요.
+    <button onclick="document.getElementById('cdnErrorBanner').style.display='none'"
+      style="margin-left:16px;padding:2px 10px;background:#991b1b;border:1px solid #ef4444;
+      border-radius:4px;color:#fecaca;cursor:pointer;">닫기</button>
+  </div>
+
   <!-- SQLITE (sql.js WASM) -->
-  <script src="https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist/sql-wasm.js"></script>
+  <script>
+    window.addEventListener('error', function(e) {
+      var src = (e.target && e.target.src) || '';
+      if (src.includes('cdn.jsdelivr.net') || src.includes('cdn.tailwindcss.com')) {
+        document.getElementById('cdnErrorBanner').style.display = 'block';
+      }
+    }, true);
+  </script>
+  <script src="assets/sql-wasm.js"
+    onerror="document.getElementById('cdnErrorBanner').style.display='block'"></script>
   <script src="storage-client.js"></script>
 
   <!-- DATA + APP -->
